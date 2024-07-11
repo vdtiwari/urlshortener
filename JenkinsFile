@@ -4,62 +4,74 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
+                echo 'Cloning the repository...'
                 git url: 'https://github.com/vdtiwari/urlshortener.git', branch: 'main'
+                echo 'Repository cloned successfully.'
             }
         }
         
         stage('Build') {
             steps {
+                echo 'Starting the build process...'
                 // Replace with your build tool commands, e.g., for a Maven project:
                 sh 'mvn clean install'
+                echo 'Build process completed.'
             }
         }
 
         stage('Test') {
             steps {
+                echo 'Running tests...'
                 // Replace with your testing commands, e.g., for a Maven project:
                 sh 'mvn test'
+                echo 'Tests completed.'
             }
         }
 
         stage('Package') {
             steps {
+                echo 'Packaging the application...'
                 // Package your application, e.g., create a WAR/JAR file
                 sh 'mvn package'
+                echo 'Packaging completed.'
             }
         }
         
         stage('Deploy') {
             steps {
+                echo 'Starting deployment...'
                 // Deployment steps; this example uses scp to copy the file to a remote server
                 // Adjust according to your deployment strategy
                 
                 // Example using scp to transfer a WAR file
                 sh 'scp target/urlshortener.war user@server:/path/to/deploy'
-                
+                echo 'File transferred to the server.'
+
                 // Example using SSH to deploy on a remote server
                 sh """
                 ssh user@server <<EOF
+                  echo 'Deploying the application...'
                   # Commands to deploy the application
                   cp /path/to/deploy/urlshortener.war /path/to/tomcat/webapps/
                   # Restart the server if needed
                   systemctl restart tomcat
+                  echo 'Application deployed and server restarted.'
                 EOF
                 """
+                echo 'Deployment completed.'
             }
         }
     }
 
     post {
         always {
-            // Clean up or notify, e.g., email notification
             echo 'Pipeline finished.'
         }
         success {
-            echo 'Deployment succeeded.'
+            echo 'Pipeline succeeded.'
         }
         failure {
-            echo 'Deployment failed.'
+            echo 'Pipeline failed.'
         }
     }
 }
