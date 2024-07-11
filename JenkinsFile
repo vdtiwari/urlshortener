@@ -1,0 +1,25 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Clone Repository') {
+            steps {
+                git url: 'https://github.com/your-repo-url.git', branch: 'main'
+            }
+        }
+        
+        stage('Build') {
+            steps {
+                // Replace with your build tool commands, e.g., for a Maven project:
+                sh 'mvn clean install'
+            }
+        }
+        
+        stage('Deploy') {
+            steps {
+                // Add deployment steps, e.g., copying files to a server
+                // sh 'scp target/myapp.war user@server:/path/to/deploy'
+            }
+        }
+    }
+}
