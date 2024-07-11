@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git url: 'https://github.com/your-repo-url.git', branch: 'main'
+                git url: 'https://github.com/vdtiwari/urlshortener.git', branch: 'main'
             }
         }
         
@@ -14,12 +14,52 @@ pipeline {
                 sh 'mvn clean install'
             }
         }
+
+        stage('Test') {
+            steps {
+                // Replace with your testing commands, e.g., for a Maven project:
+                sh 'mvn test'
+            }
+        }
+
+        stage('Package') {
+            steps {
+                // Package your application, e.g., create a WAR/JAR file
+                sh 'mvn package'
+            }
+        }
         
         stage('Deploy') {
             steps {
-                // Add deployment steps, e.g., copying files to a server
-                // sh 'scp target/myapp.war user@server:/path/to/deploy'
+                // Deployment steps; this example uses scp to copy the file to a remote server
+                // Adjust according to your deployment strategy
+                
+                // Example using scp to transfer a WAR file
+                sh 'scp target/urlshortener.war user@server:/path/to/deploy'
+                
+                // Example using SSH to deploy on a remote server
+                sh """
+                ssh user@server <<EOF
+                  # Commands to deploy the application
+                  cp /path/to/deploy/urlshortener.war /path/to/tomcat/webapps/
+                  # Restart the server if needed
+                  systemctl restart tomcat
+                EOF
+                """
             }
+        }
+    }
+
+    post {
+        always {
+            // Clean up or notify, e.g., email notification
+            echo 'Pipeline finished.'
+        }
+        success {
+            echo 'Deployment succeeded.'
+        }
+        failure {
+            echo 'Deployment failed.'
         }
     }
 }
